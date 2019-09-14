@@ -1,0 +1,23 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    background-color: #EEE;
+}
+
+.container {
+    max-width: 1128px;
+    padding: 0 24px;
+    margin: auto;
+}
+
+.drop-area {
+    width: 100%;
+    height: 450px;
+    border: 2px dotted black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
