@@ -11,6 +11,9 @@
             height: 400px;
             position: relative;
         }
+        #wrap > canvas:not([id]) {
+            z-index: 2;
+        }
         #wrap > canvas {
             position: absolute;
             left: 0;
@@ -32,7 +35,14 @@
         <option value="orange">A2</option>
         <option value="blue">A3</option>
     </select>
-
+    <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+    <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+  integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+  crossorigin="anonymous"></script>
     <script>
 
         var alreadyBlocks = {
@@ -140,7 +150,7 @@
                 canvas.style.top = `${startY}px`;
                 canvas.setAttribute('width', width);
                 canvas.setAttribute('height', height);
-                wrap.appendChild(canvas);
+                wrap.prepend(canvas);
 
                 var virtualCtx = canvas.getContext('2d');
                 virtualCtx.fillStyle = color || 'red';
@@ -149,6 +159,40 @@
                 virtualCtx.fillStyle = 'black';
                 virtualCtx.font = "20px Malgun Gothic";
                 virtualCtx.fillText(text, width / 2, height / 2);
+
+                $(canvas).attr('data-name', text);
+
+                $(canvas).draggable({
+                    containment: '#wrap',
+                    grid: [10, 10],
+                    stop(e) {
+                        var startX = $(this).position().left;
+                        var startY = $(this).position().top;
+                        var endX = startX + $(this).width();
+                        var endY = startY + $(this).height();
+                        var name = $(this).data('name');
+                        var flag = true;
+
+                        if (RoadCanvasManager.checkClashRoad(startX, startY, endX, endY)) {
+                            alert('도로 위에 올라갈 수 없습니다!');
+                            flag = false;
+                        }
+
+                        if (DrawCanvasManager.checkClashBlock(name, startX, startY, endX, endY)) {
+                            alert('다른 부스 위에 올라갈 수 없습니다!');
+                            flag = false;
+                        }
+
+                        if (flag) {
+                            alreadyBlocks[name].startX = startX;
+                            alreadyBlocks[name].startY = startY;
+                            alreadyBlocks[name].endX = endX;
+                            alreadyBlocks[name].endY = endY;
+                        }
+
+                        DrawCanvasManager.importAlreadyBlocks(alreadyBlocks);
+                    },
+                })
             },
             clearCanvas() {
                 var canvases = document.querySelectorAll('#wrap canvas:not([id])');
@@ -188,7 +232,6 @@
                     var sy = item.startY;
                     var ex = item.endX;
                     var ey = item.endY;
-                    console.log(sx, sy, ex, ey);
 
                     if (((sx <= startX && ex > startX) || (sx < endX && ex >= endX) || (sx >= startX && ex <= endX)) &&
                         ((sy <= startY && ey > startY) || (sy < endY && ey >= endY) || (sy >= startY && ey <= endY))) {
