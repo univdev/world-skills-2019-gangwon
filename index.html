@@ -279,6 +279,10 @@
                 container.appendChild(canvas);
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                ctx.fillStyle = 'black';
+                ctx.textStyle = '20px';
+                ctx.textAlign = 'center';
+                ctx.fillText(key, canvasWidth / 2, canvasHeight / 2);
             }
         },
         clear(container) {
@@ -379,6 +383,7 @@
             container.innerHTML = "";
             var index = 0;
             for (var item of data) {
+                console.log(item);
                 var road = item.road || [];
                 var rooms = item.rooms || {};
                 var wrap = document.createElement('div');
