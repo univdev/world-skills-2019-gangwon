@@ -21,6 +21,9 @@
             position: absolute;
             z-index: 0;
         }
+        #wrap .item--selected {
+
+        }
         #draw, #road, #background {
             position: absolute;
             left: 0;
@@ -50,8 +53,8 @@
         }
         #roadContainer > div {
             position: relative;
-            width: 400px;
-            height: 200px;
+            width: 200px;
+            height: 100px;
         }
         #roadContainer canvas {
             position: absolute;
@@ -336,9 +339,37 @@
         load(road) {
             var container = document.getElementById('wrap');
             var roadCanvas = document.getElementById('road');
+            currentMap.rooms = {};
             currentMap.road = road;
             DrawCanvasManager.clear(container);
             RoadCanvasManager.draw(roadCanvas, 40, 80, currentMap.road);
+        },
+        drawList(roads) {
+            var roadContainer = document.getElementById('roadContainer');
+            var index = 0;
+            for (var road of roads) {
+                var wrap = document.createElement('div');
+                var backgroundCanvas = document.createElement('canvas');
+                var roadCanvas = document.createElement('canvas');
+                var backgroundCanvasContext = backgroundCanvas.getContext('2d');
+                var roadCanvasContext = roadCanvas.getContext('2d');
+                var trigger = document.createElement('div');
+
+                trigger.setAttribute('class', 'trigger');
+                trigger.setAttribute('data-idx', index);
+                backgroundCanvas.setAttribute('width', 200);
+                backgroundCanvas.setAttribute('height', 100);
+                roadCanvas.setAttribute('width', 200);
+                roadCanvas.setAttribute('height', 100);
+                wrap.appendChild(backgroundCanvas);
+                wrap.appendChild(roadCanvas);
+                wrap.appendChild(trigger);
+                roadContainer.appendChild(wrap);
+
+                BackgroundCanvasManager.create(backgroundCanvas, 40, 80);
+                RoadCanvasManager.draw(roadCanvas, 40, 80, road);
+                index += 1;
+            }
         },
     };
 
@@ -413,31 +444,7 @@
                 options.color = color;
             });
 
-            var roadContainer = document.getElementById('roadContainer');
-            var index = 0;
-            for (var road of roads) {
-                var wrap = document.createElement('div');
-                var backgroundCanvas = document.createElement('canvas');
-                var roadCanvas = document.createElement('canvas');
-                var backgroundCanvasContext = backgroundCanvas.getContext('2d');
-                var roadCanvasContext = roadCanvas.getContext('2d');
-                var trigger = document.createElement('div');
-
-                trigger.setAttribute('class', 'trigger');
-                trigger.setAttribute('data-idx', index);
-                backgroundCanvas.setAttribute('width', 400);
-                backgroundCanvas.setAttribute('height', 200);
-                roadCanvas.setAttribute('width', 400);
-                roadCanvas.setAttribute('height', 200);
-                wrap.appendChild(backgroundCanvas);
-                wrap.appendChild(roadCanvas);
-                wrap.appendChild(trigger);
-                roadContainer.appendChild(wrap);
-
-                BackgroundCanvasManager.create(backgroundCanvas, 40, 80);
-                RoadCanvasManager.draw(roadCanvas, 40, 80, road);
-                index += 1;
-            }
+            RoadCanvasManager.drawList(roads);
         },
     };
 
